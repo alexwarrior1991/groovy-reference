@@ -2,6 +2,7 @@ package com.alejandro
 
 import com.alejandro.c01basics.C01_00Index
 import com.alejandro.c02types.C02_00Index
+import com.alejandro.c03strings.C03_00Index
 import com.alejandro.infra.Chapter
 import com.alejandro.infra.Launcher
 import groovy.transform.CompileStatic
@@ -37,6 +38,7 @@ class Main {
     static final List<Chapter> CHAPTERS = [
         C01_00Index.CHAPTER,
         C02_00Index.CHAPTER,
+        C03_00Index.CHAPTER,
     ].asImmutable()
 
     static void main(String[] args) {

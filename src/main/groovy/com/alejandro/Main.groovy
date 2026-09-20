@@ -20,6 +20,9 @@ import com.alejandro.c17categories.C17_00Index
 import com.alejandro.c18exceptions.C18_00Index
 import com.alejandro.c19regex.C19_00Index
 import com.alejandro.c20gdk.C20_00Index
+import com.alejandro.c21files.C21_00Index
+import com.alejandro.c22json.C22_00Index
+import com.alejandro.c23xml.C23_00Index
 import com.alejandro.infra.Chapter
 import com.alejandro.infra.Launcher
 import groovy.transform.CompileStatic
@@ -73,6 +76,9 @@ class Main {
         C18_00Index.CHAPTER,
         C19_00Index.CHAPTER,
         C20_00Index.CHAPTER,
+        C21_00Index.CHAPTER,
+        C22_00Index.CHAPTER,
+        C23_00Index.CHAPTER,
     ].asImmutable()
 
     static void main(String[] args) {

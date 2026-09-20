@@ -28,6 +28,8 @@ import com.alejandro.c25scripts.C25_00Index
 import com.alejandro.c26javainterop.C26_00Index
 import com.alejandro.c27concurrency.C27_00Index
 import com.alejandro.c28spock.C28_00Index
+import com.alejandro.c29traps.C29_00Index
+import com.alejandro.c30exercises.C30_00Index
 import com.alejandro.infra.Chapter
 import com.alejandro.infra.Launcher
 import groovy.transform.CompileStatic
@@ -89,6 +91,8 @@ class Main {
         C26_00Index.CHAPTER,
         C27_00Index.CHAPTER,
         C28_00Index.CHAPTER,
+        C29_00Index.CHAPTER,
+        C30_00Index.CHAPTER,
     ].asImmutable()
 
     static void main(String[] args) {

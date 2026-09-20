@@ -1,4 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  =====================================================================================
+   groovy-reference · configuración de build
+
+   Este fichero también es material didáctico: cada dependencia lleva un comentario
+   explicando QUÉ capítulo la necesita y QUÉ pasa si falta.
+  =====================================================================================
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -7,50 +15,274 @@
     <groupId>com.alejandro</groupId>
     <artifactId>groovy-reference</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>groovy-reference</name>
+
+    <properties>
+        <!--
+          JDK con el que se compila y se ejecuta el proyecto.
+
+          21 es el mínimo de este repositorio y el LTS más extendido. Si tienes otro JDK
+          instalado (por ejemplo 25), cambia este número: no hace falta tocar nada más.
+          Compilar a 21 desde un JDK más nuevo funciona igual; al revés, no.
+        -->
+        <groovyReference.jdk>21</groovyReference.jdk>
+        <maven.compiler.release>${groovyReference.jdk}</maven.compiler.release>
+
+        <!-- Todo el repositorio lleva acentos, eñes y caracteres de dibujo de cajas. -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <groovy.version>5.1.1</groovy.version>
+        <spock.version>2.4-groovy-5.0</spock.version>
+        <byteBuddy.version>1.18.14</byteBuddy.version>
+        <objenesis.version>3.6</objenesis.version>
+
+        <gmavenplus.version>5.1.0</gmavenplus.version>
+        <compiler.plugin.version>3.16.0</compiler.plugin.version>
+        <surefire.version>3.6.0</surefire.version>
+        <exec.plugin.version>3.6.4</exec.plugin.version>
+        <appassembler.version>2.1.0</appassembler.version>
+        <wrapper.plugin.version>3.3.4</wrapper.plugin.version>
+
+        <!-- La clase que lanza el índice de demos. La usan `exec:java` y el dist. -->
+        <exec.mainClass>com.alejandro.Main</exec.mainClass>
+    </properties>
+
+    <!--
+      El BOM de Groovy fija la versión de TODOS los módulos de una vez. Así, abajo, cada
+      dependencia se declara sin `<version>`: sólo hay un número que mantener.
+    -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.groovy</groupId>
+                <artifactId>groovy-bom</artifactId>
+                <version>${groovy.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
+        <!-- ==========================================================================
+             Groovy se reparte en módulos. Existe `groovy-all`, que los trae TODOS (22,
+             incluidos la consola Swing, el servlet y groovysh), pero aquí se declara
+             sólo lo que se usa: es la práctica correcta en un proyecto real, y de paso
+             deja claro qué capítulo depende de qué.
+             ========================================================================== -->
+
+        <!-- El núcleo del lenguaje: closures, el MOP, el GDK, las transformaciones AST.
+             Sin esto no hay nada. -->
         <dependency>
             <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>5.1.1</version>
-            <type>pom</type>
+            <artifactId>groovy</artifactId>
+        </dependency>
+
+        <!-- Capítulo 22: JsonSlurper, JsonOutput, JsonBuilder, JsonGenerator. -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-json</artifactId>
+        </dependency>
+
+        <!-- Capítulo 23: XmlSlurper, XmlParser, MarkupBuilder y StreamingMarkupBuilder. -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-xml</artifactId>
+        </dependency>
+
+        <!-- Capítulo 24: SimpleTemplateEngine y compañía, para la parte de plantillas
+             del capítulo de builders. -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-templates</artifactId>
+        </dependency>
+
+        <!-- Capítulo 20: lo que el GDK añade a java.time (LocalDate + 1, rangos de
+             fechas, formateo). Sin este módulo, `java.time` funciona pero "pelado". -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-datetime</artifactId>
+        </dependency>
+
+        <!-- Capítulo 21: las extensiones de Path (path.text, path.eachLine, traverse).
+             Ojo: las de File están en el núcleo; las de Path, aquí. -->
+        <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy-nio</artifactId>
+        </dependency>
+
+        <!-- ==========================================================================
+             Capítulo 28 y toda la suite de tests.
+             ========================================================================== -->
+
+        <!-- Spock: el framework de tests de Groovy. Trae JUnit Platform consigo, así que
+             no hace falta declarar junit-jupiter por separado. -->
+        <dependency>
+            <groupId>org.spockframework</groupId>
+            <artifactId>spock-core</artifactId>
+            <version>${spock.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Estas dos son opcionales para Spock, y por eso hay que pedirlas a mano: sin
+             ellas, `Mock(UnaInterfaz)` funciona pero `Mock(UnaClase)` falla EN
+             EJECUCIÓN con "Cannot create mock for class ... byte-buddy not available".
+             El capítulo 28 lo demuestra. -->
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>${byteBuddy.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.objenesis</groupId>
+            <artifactId>objenesis</artifactId>
+            <version>${objenesis.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- ======================================================================
+                 gmavenplus: el plugin que compila Groovy con Maven.
+
+                 El orden de los goals importa y es el punto donde más se falla:
+
+                   addSources/addTestSources  registran src/main/groovy y src/test/groovy
+                                              como raíces de fuentes
+                   generateStubs              genera stubs Java de las clases Groovy para
+                                              que javac pueda compilar el Java del
+                                              capítulo 26 que las referencia
+                   compile                    compila el Groovy de verdad
+                   removeStubs                borra los stubs (si se quedan, acaban en el
+                                              jar y estorban)
+
+                 …y lo mismo para los tests. Sin `generateStubs`, la compilación mixta
+                 Groovy + Java del capítulo 26 falla.
+                 ====================================================================== -->
             <plugin>
                 <groupId>org.codehaus.gmavenplus</groupId>
                 <artifactId>gmavenplus-plugin</artifactId>
-                <version>1.13.1</version>
+                <version>${gmavenplus.version}</version>
                 <executions>
                     <execution>
+                        <id>groovy</id>
                         <goals>
-                            <goal>execute</goal>
+                            <goal>addSources</goal>
+                            <goal>addTestSources</goal>
+                            <goal>generateStubs</goal>
+                            <goal>compile</goal>
+                            <goal>removeStubs</goal>
+                            <goal>generateTestStubs</goal>
+                            <goal>compileTests</goal>
+                            <goal>removeTestStubs</goal>
                         </goals>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.groovy</groupId>
-                        <artifactId>groovy</artifactId>
-                        <version>5.1.1</version>
-                        <scope>runtime</scope>
-                    </dependency>
-                </dependencies>
                 <configuration>
-                    <scripts>
-                        <script>src/main/groovy/Main.groovy</script>
-                    </scripts>
+                    <sourceEncoding>UTF-8</sourceEncoding>
+                    <targetBytecode>${groovyReference.jdk}</targetBytecode>
+                    <!-- invokedynamic: el modo por defecto en Groovy 4+. Más rápido en
+                         llamadas dinámicas y necesario para que el MOP (capítulo 16) se
+                         comporte como en producción. -->
+                    <invokeDynamic>true</invokeDynamic>
+                    <parallelParsing>true</parallelParsing>
+                    <!-- Conserva los nombres de los parámetros en el bytecode: los
+                         necesitan los argumentos con nombre y la reflexión. -->
+                    <parameters>true</parameters>
                 </configuration>
+            </plugin>
+
+            <!-- El Java del capítulo 26 (interoperabilidad) se compila con éste. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.plugin.version}</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <parameters>true</parameters>
+                </configuration>
+            </plugin>
+
+            <!-- ======================================================================
+                 surefire: ejecuta los Spec de Spock.
+
+                 LA TRAMPA: los patrones de `includes` se aplican a las clases YA
+                 COMPILADAS, no a los ficheros fuente. Por eso el patrón es `*Spec.java`
+                 aunque los tests sean `.groovy`. Con `**/*Spec.groovy` no se ejecuta
+                 NINGÚN test y el build pasa en verde sin haber probado nada.
+                 ====================================================================== -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+                <configuration>
+                    <includes>
+                        <include>**/*Spec.java</include>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <failIfNoTests>true</failIfNoTests>
+                    <!-- Desde el JDK 19, System.out NO usa `file.encoding` sino la
+                         codificación nativa de la consola: hacen falta las tres. -->
+                    <argLine>-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8</argLine>
+                </configuration>
+            </plugin>
+
+            <!-- ======================================================================
+                 exec:java lanza el índice de demos dentro de la JVM de Maven, así que
+                 hereda su entrada estándar y el menú interactivo funciona.
+                 ====================================================================== -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec.plugin.version}</version>
+                <configuration>
+                    <mainClass>${exec.mainClass}</mainClass>
+                    <!-- Sin esto, exec intenta matar los hilos "daemon" al terminar y
+                         puede quedarse esperando a los del capítulo 27. -->
+                    <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                </configuration>
+            </plugin>
+
+            <!-- ======================================================================
+                 appassembler genera en target/dist un script que arranca sin Maven de
+                 por medio. Es el atajo para cuando vas a iterar mucho sobre una demo:
+                 `exec:java` tarda un par de segundos en levantar Maven; el script, nada.
+                 ====================================================================== -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>appassembler-maven-plugin</artifactId>
+                <version>${appassembler.version}</version>
+                <configuration>
+                    <assembleDirectory>${project.build.directory}/dist</assembleDirectory>
+                    <repositoryLayout>flat</repositoryLayout>
+                    <repositoryName>lib</repositoryName>
+                    <extraJvmArguments>-Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8</extraJvmArguments>
+                    <programs>
+                        <program>
+                            <mainClass>${exec.mainClass}</mainClass>
+                            <id>groovy-reference</id>
+                        </program>
+                    </programs>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>dist</id>
+                        <phase>package</phase>
+                        <goals><goal>assemble</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Permite regenerar el wrapper con `mvn wrapper:wrapper`. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-wrapper-plugin</artifactId>
+                <version>${wrapper.plugin.version}</version>
             </plugin>
         </plugins>
     </build>
-
-    <properties>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
 </project>

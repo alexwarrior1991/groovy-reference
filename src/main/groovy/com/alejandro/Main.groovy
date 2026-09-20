@@ -14,6 +14,8 @@ import com.alejandro.c11traits.C11_00Index
 import com.alejandro.c12ast.C12_00Index
 import com.alejandro.c13records.C13_00Index
 import com.alejandro.c14operators.C14_00Index
+import com.alejandro.c15static.C15_00Index
+import com.alejandro.c16mop.C16_00Index
 import com.alejandro.infra.Chapter
 import com.alejandro.infra.Launcher
 import groovy.transform.CompileStatic
@@ -61,6 +63,8 @@ class Main {
         C12_00Index.CHAPTER,
         C13_00Index.CHAPTER,
         C14_00Index.CHAPTER,
+        C15_00Index.CHAPTER,
+        C16_00Index.CHAPTER,
     ].asImmutable()
 
     static void main(String[] args) {

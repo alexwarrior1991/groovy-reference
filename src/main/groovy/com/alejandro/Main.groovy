@@ -5,6 +5,8 @@ import com.alejandro.c02types.C02_00Index
 import com.alejandro.c03strings.C03_00Index
 import com.alejandro.c04operators.C04_00Index
 import com.alejandro.c05truth.C05_00Index
+import com.alejandro.c06closures.C06_00Index
+import com.alejandro.c07closuresadvanced.C07_00Index
 import com.alejandro.infra.Chapter
 import com.alejandro.infra.Launcher
 import groovy.transform.CompileStatic
@@ -43,6 +45,8 @@ class Main {
         C03_00Index.CHAPTER,
         C04_00Index.CHAPTER,
         C05_00Index.CHAPTER,
+        C06_00Index.CHAPTER,
+        C07_00Index.CHAPTER,
     ].asImmutable()
 
     static void main(String[] args) {

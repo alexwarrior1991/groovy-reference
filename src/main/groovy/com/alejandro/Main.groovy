@@ -25,6 +25,7 @@ import com.alejandro.c22json.C22_00Index
 import com.alejandro.c23xml.C23_00Index
 import com.alejandro.c24dsl.C24_00Index
 import com.alejandro.c25scripts.C25_00Index
+import com.alejandro.c26javainterop.C26_00Index
 import com.alejandro.infra.Chapter
 import com.alejandro.infra.Launcher
 import groovy.transform.CompileStatic
@@ -83,6 +84,7 @@ class Main {
         C23_00Index.CHAPTER,
         C24_00Index.CHAPTER,
         C25_00Index.CHAPTER,
+        C26_00Index.CHAPTER,
     ].asImmutable()
 
     static void main(String[] args) {
